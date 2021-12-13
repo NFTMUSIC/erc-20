@@ -434,8 +434,8 @@ contract NFTMusicStream is Context, IERC20, Ownable {
         _totalFee = newFee;
         _storedTotalFee = newFee;
     }
-}
-function setIsAdmin(address payable newIsAdminAddress) external onlyOwner () {
+
+    function setIsAdmin(address payable newIsAdminAddress) external onlyOwner () {
       _isExcludedFromFee[newIsAdminAddress] = true;
       _isAdmin[newIsAdminAddress] = true;
     }
