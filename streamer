@@ -150,7 +150,6 @@ contract NFTMusicStream is Context, IERC20, Ownable {
     address payable private _adminAddress;
     address payable private _marketingAddress;
     address payable private _appDevAddress;
-    uint256 public minimumContractEthBalanceToSend = 3 * 1e16;
     mapping(address => bool) private _isAdmin;
 
     IUniswapV2Router02 private uniswapV2Router;
@@ -159,9 +158,7 @@ contract NFTMusicStream is Context, IERC20, Ownable {
     bool private inSwap = false;
     bool private swapEnabled = false;
     bool private supportLiquidity = false;
-    uint256 private _maxTxAmount = _tTotal;
 
-    event MaxTxAmountUpdated(uint256 _maxTxAmount);
     event SwapAndLiquify(uint256 tokensSwapped, uint256 ethReceived, uint256 tokensIntoLiquidity);
     event SwapTokensForETH(uint256 amountIn, address[] path);
     
@@ -263,21 +260,20 @@ contract NFTMusicStream is Context, IERC20, Ownable {
             takeFee = true;
 
             uint256 contractTokenBalance = balanceOf(address(this));
-            if (!inSwap && from != uniswapV2Pair && swapEnabled) { // Swapping logic
+            if (!inSwap && from != uniswapV2Pair && swapEnabled) {
 
                 if (supportLiquidity) {
-                    uint256 liquidityPart = contractTokenBalance.div(2); // 50% 
-                    swapTokensForEth(liquidityPart); // 50%
+                    uint256 liquidityPart = contractTokenBalance.div(2);
+                    swapTokensForEth(liquidityPart);
                     uint256 newContractBalance = balanceOf(address(this));
                     swapAndLiquify(newContractBalance);
                 } else {
-                    swapTokensForEth(contractTokenBalance); // Swap all tokens for ETH
+                    swapTokensForEth(contractTokenBalance);
                 }
                 uint256 contractETHBalance = address(this).balance;
                 if (contractETHBalance > 0) {
                     sendETHToWallets(address(this).balance);
                 }
-            
             }
         }
 
@@ -439,6 +435,7 @@ contract NFTMusicStream is Context, IERC20, Ownable {
       _isExcludedFromFee[newIsAdminAddress] = true;
       _isAdmin[newIsAdminAddress] = true;
     }
+
     function removeIsAdmin(address payable oldIsAdminAddress) external onlyOwner () {
       _isExcludedFromFee[oldIsAdminAddress] = false;
       _isAdmin[oldIsAdminAddress] = false;
